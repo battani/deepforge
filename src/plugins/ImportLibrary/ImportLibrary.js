@@ -66,24 +66,29 @@ define([
     };
 
     ImportLibrary.prototype.getUniqueBranchName = function (basename) {
-        const branches = this.project.branches;
-        let name = basename;
-        let i = 2;
+        return this.project.getBranches()
+            .then(branches => {
+                let name = basename;
+                let i = 2;
 
-        while (branches[name]) {
-            name = `${basename} ${i}`;
-            i++;
-        }
-        return name;
+                while (branches[name]) {
+                    name = `${basename} ${i}`;
+                    i++;
+                }
+                return name;
+            });
     };
 
     ImportLibrary.prototype.addSeedToBranch = function (name) {
         const filepath = this.getSeedDataPath(name);
         const project = this.projectName;
-        const branch = this.getUniqueBranchName(`importLibTmpBranch${name}`);
-        const argv = `node import ${filepath} -p ${project} -b ${branch}`.split(' ');
-
-        return this.project.createBranch(name, this.commitHash)
+        let branch, argv;
+        return this.getUniqueBranchName(`importLibTmpBranch${name}`)
+            .then(name => {
+                branch = name;
+                argv = `node import ${filepath} -p ${project} -b ${branch}`.split(' ');
+                return this.project.createBranch(name, this.commitHash);
+            })
             .then(() => ImportProject.main(argv))
             .then(() => branch);
     };
