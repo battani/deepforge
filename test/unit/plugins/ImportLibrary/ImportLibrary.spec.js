@@ -14,7 +14,7 @@ describe.only('ImportLibrary', function () {
         commitHash;
 
     before(function (done) {
-        testFixture.clearDBAndGetGMEAuth(gmeConfig, projectName)
+        testFixture.clearDBAndGetGMEAuth(gmeConfig)
             .then(function (gmeAuth_) {
                 gmeAuth = gmeAuth_;
                 // This uses in memory storage. Use testFixture.getMongoStorage to persist test to database.
